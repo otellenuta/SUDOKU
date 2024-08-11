@@ -1,0 +1,232 @@
+static void AfisareTabla(int[,] tablaMare)
+{
+    for (int i = 0; i < tablaMare.GetLength(0); i++ )
+    {
+        for(int j = 0; j < tablaMare.GetLength(1); j++ )
+        {
+            if (tablaMare[i, j] == 0)
+            {
+                Console.Write("   ");
+            }
+            else if (tablaMare[i, j] != 0)
+            {
+                Console.Write(" " + tablaMare[i, j] + " ");
+            }
+            if (j <  tablaMare.GetLength(1) - 1)
+            {                                                    
+                Console.Write("|");
+                if (j % 3 == 2 && j != 0)
+                {
+                    Console.Write("|");
+                }
+            }            
+        } 
+        Console.WriteLine();
+        if (i < tablaMare.GetLength(0) - 1)
+        {                        
+            if (i % 3 == 2 && i != 0)
+            {                
+                for (int j = 0; j < tablaMare.GetLength(0) * 4; j++)
+                {
+                    Console.Write("=");
+                }                
+            }
+            else
+            {
+                for (int j = 0; j < tablaMare.GetLength(0) * 4; j++)
+                {
+                    Console.Write("-");
+                }
+            }            
+        }        
+        Console.WriteLine();
+    }
+}
+ 
+static void AlegeCelula(out int rand, out int coloana)
+{
+    rand = int.Parse(Console.ReadLine());
+    coloana = int.Parse(Console.ReadLine()); 
+}
+ 
+static bool CelulaLibera(int[,] tablaMare, int rand, int coloana, int cifraIntrodusa)
+{
+    if (tablaMare[rand, coloana] == 0)
+    {
+        tablaMare[rand, coloana] = cifraIntrodusa;
+        return true;
+    }
+    else
+    {
+        Console.WriteLine();
+        Console.WriteLine("Aceasta pozitie este deja ocupata!");
+        return false;
+    }    
+}
+ 
+static bool PozitieAdmisibila(int[,] tablaMare, int cifraIntrodusa, int rand, int coloana)
+{   
+        for (int j = 0; j < 9; j++)
+        {
+            if (cifraIntrodusa == tablaMare[rand, j])
+            {
+                Console.WriteLine();
+                Console.WriteLine("In acest rand nu puteti plasa cifra dorita");
+                return false;
+            }
+        }
+ 
+        for (int i = 0; i < 9; i++)
+        {
+            if (cifraIntrodusa == tablaMare[i, coloana])
+            {
+                Console.WriteLine();
+                Console.WriteLine("In aceasta coloana nu puteti plasa cifra dorita");
+                return false;
+            }
+        }
+ 
+        if (CadranAdmisibil(rand, coloana, cifraIntrodusa, tablaMare) == false)
+        {
+            Console.WriteLine();
+            Console.WriteLine("In acest cadran nu puteti plasa cifra dorita");
+            return false;
+        }
+    return true;
+}
+ 
+static bool CadranAdmisibil(int rand, int coloana, int cifraIntrodusa, int[,] tablaMare)
+{
+    
+    int cadranRand = (rand / 3) * 3; 
+    int cadranColoana = (coloana / 3) * 3;
+ 
+    for (int i = 0; i < 3; i ++)
+    {
+        for (int j = 0; j < 3; j ++)
+        {
+            if (cifraIntrodusa == tablaMare[cadranRand + i, cadranColoana + j])
+            {
+                return false;
+            }
+        }
+    }
+    return true;
+}
+ 
+static bool JocFinisat(int[,] tablaMare)
+{
+    for (int i = 0; i < tablaMare.GetLength(0); i ++)
+    {
+        for (int j = 0; j < tablaMare.GetLength(1); j ++)
+        {
+            if (tablaMare[i, j] == 0)
+            {
+                return false;
+            }
+        }
+    }
+    return true;
+}
+ 
+static bool ValoareaAdmisibila(int cifraIntrodusa)
+{
+    if (cifraIntrodusa > 0 && cifraIntrodusa <= 9)
+    {
+        return true;
+    }
+    Console.WriteLine("Valoarea introdusa nu poate fi plasata in tabla.");
+    Console.WriteLine();
+    Console.WriteLine("Tin sa va reamintesc ca e posibil de introdus doar valori cuprinse intre 1 si 9 inclusiv!");
+    return false;
+}
+ 
+static void IntroduCifra(out int cifraIntrodusa)
+{
+    cifraIntrodusa = int.Parse(Console.ReadLine());
+}
+ 
+static void InitializeazaTabla(out int[,] tablaDeJoc, bool[,] permisiuneaDeAsterge)
+{
+    string randDeTabla = "";
+    for (int i = 0; i < 9; i++)
+    {    
+        Console.WriteLine("Introduceti randul " + i + " din tabla de joc care doriti sa o rezolvati:");
+        randDeTabla = Console.ReadLine();
+        for (int j = 0; j < randDeTabla.Length; j++)
+        {
+            tablaDeJoc[i, j] = randDeTabla[j] - '0';
+            if(tabla[i, j] == 0)
+            {
+                permisiuneaDeAsterge = true;
+            }
+            else
+            {
+                permisiuneaDeAsterge = false;
+            }
+        }
+    }
+}
+ 
+static void StergeCelula(int[,] tablaDeJoc, boo[,] permisiuneaDeAsterge)
+{
+    AlegeCelula(out int rand, out int coloana);
+    if (permisiuneaDeAsterge[rand, coloana] == true)
+    {
+        Console.WriteLine("Celula aleasa va putea fi stearsa cu succes!");
+        tabblaDeJoc[rand, coloana] = 0;
+    }
+}
+ 
+int[,] tablaMare = new int[9, 9];
+bool[,] permisiuneaDeAsterge = new bool[9, 9];
+InitializeazaTabla(tablaMare, permisiuneaDeAsterge);
+AfisareTabla(tablaMare);
+ 
+while (JocFinisat(tablaMare) == false)//atat timp cat jocul inca nu este finisat, 
+{
+    int cifraIntrodusa = 0;
+ 
+    do
+    {
+        Console.WriteLine("Alegeti celula unde vreti sa introduceti cifra.");
+        Console.WriteLine("Introduceti randul si coloana.");
+        AlegeCelula(out int rand, out int coloana);
+        if (rand >= tablaMare.GetLength(0) || coloana >= tablaMare.GetLength(1))
+        {
+            Console.WriteLine("Din pacate tabla este in limite stricte, iar dumneavoastra a-ti depasit limitele, mai incercati o data!");
+            continue;
+        }
+        Console.WriteLine();
+        Console.WriteLine("Introduceti cifra dorita");
+        IntroduCifra(out cifraIntrodusa); 
+        if (ValoareaAdmisibila(cifraIntrodusa) == false)
+        {
+            continue;
+        }
+        if (PozitieAdmisibila(tablaMare, cifraIntrodusa, rand, coloana) == true && CelulaLibera(tablaMare, rand, coloana, cifraIntrodusa) == true)
+        {            
+            break;
+        }
+        else
+        {           
+            Console.WriteLine();
+            continue;
+        }
+    } while (true);
+ 
+    AfisareTabla(tablaMare);
+    string comanda = Console.ReadLine();
+    if(comanda == "sterge!")
+    {
+        Console.WriteLine("Alege celula care doresti sa o stergi, introdu randul si coloana:");
+        StergeCelula(tablaMare, permisiuneaDeAsterge);
+    }
+}
+ 
+if (JocFinisat(tablaMare) == true)
+{
+    Console.WriteLine("Joc finisat!");
+    Console.WriteLine("Felicitari!");
+    return;
+}
